@@ -85,9 +85,13 @@ fn run_app(cli: Cli) -> Result<(), String> {
         let manager_tx_clone = manager_tx.clone();
         let client_clone = utils::create_api_client().unwrap(); // Re-create client for the polling thread
 
-        let _polling_handle = thread::spawn(move || {
-            polling_client::run_polling_client(client_clone, api_url_clone, manager_tx_clone)
-        });
+        if cli.challenge.is_none() {
+            let _polling_handle = thread::spawn(move || {
+                polling_client::run_polling_client(client_clone, api_url_clone, manager_tx_clone)
+            });
+        } else {
+            println!("Fixed mode set, not polling for new challenges.");
+        }
     }
 
     // To keep the application running until externally stopped:
